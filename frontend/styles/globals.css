@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #__next { height: 100%; }
+
+/* Custom utilities */
+.btn { @apply px-4 py-2 rounded-md font-medium }
+.card { @apply bg-white rounded-lg shadow p-4 }
+
+/* Theme enhancements */
+body { font-family: Inter, ui-sans-serif, system-ui; background: linear-gradient(180deg, #fbf8ff 0%, #fff 100%); }
+
+.hero-title { @apply text-display-1 text-brand-700 }
+.hero-sub { @apply text-lg text-gray-600 }
+
+.glass {
+	background: rgba(255,255,255,0.7);
+	backdrop-filter: blur(8px) saturate(120%);
+	-webkit-backdrop-filter: blur(8px) saturate(120%);
+	border: 1px solid rgba(255,255,255,0.6);
+}
+
+.tech-card { @apply p-6 rounded-2xl shadow-glow-md bg-white/80 }
+.tech-title { @apply text-xl font-semibold text-gray-800 }
+.tech-desc { @apply text-sm text-gray-600 mt-2 }
+
+/* Space theme additions */
+body {
+	background: radial-gradient(ellipse at bottom, #0b1020 0%, #020312 60%);
+	color: #e6eef8;
+}
+
+.space-hero {
+	background: linear-gradient(90deg, rgba(124,58,237,0.12), rgba(59,130,246,0.08));
+	border: 1px solid rgba(255,255,255,0.04);
+	box-shadow: 0 10px 40px rgba(59,130,246,0.08);
+}
+
+.stars {
+	position: fixed; inset: 0; z-index: 0; pointer-events: none; background-image: radial-gradient(#ffffff22 1px, transparent 1px), radial-gradient(#ffffff11 2px, transparent 2px); background-size: 200px 200px, 500px 500px; opacity: 0.6;
+}
+
+.neon-btn { @apply px-6 py-3 rounded-xl text-white font-semibold; background: linear-gradient(90deg,#7b61ff,#ff5da2); box-shadow: 0 6px 30px rgba(123,97,255,0.28), 0 0 20px rgba(255,93,162,0.08) }
+
+.glass { background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)); border: 1px solid rgba(255,255,255,0.04); }
+
+.tech-card { @apply p-6 rounded-2xl; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow: 0 10px 30px rgba(11,16,32,0.6), 0 0 30px rgba(123,97,255,0.06) }
+.tech-title { @apply text-2xl font-extrabold text-white }
+.tech-desc { @apply text-sm text-gray-300 mt-2 }
