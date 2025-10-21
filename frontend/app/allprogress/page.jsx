@@ -4,11 +4,30 @@ import React, { useEffect, useState } from "react";
 import { API_BASE, savePlan } from "../../lib/api";
 
 export default function AllProgressPage() {
+  // ...existing code...
   const [plans, setPlans] = useState([]);
   const [search, setSearch] = useState("");
   const [popup, setPopup] = useState({ open: false, url: "", title: "" });
   const [modal, setModal] = useState({ open: false, plan: null });
   const [modalLoading, setModalLoading] = useState(false);
+  const [initialModalOpened, setInitialModalOpened] = useState(false);
+
+  // Read query params for hobby and level
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const hobbyParam = params.get('hobby');
+      const levelParam = params.get('level');
+      if (plans.length > 0 && hobbyParam && levelParam && !initialModalOpened) {
+        const match = plans.find(p => p.hobby === hobbyParam && p.level === levelParam);
+        if (match) {
+          setModal({ open: true, plan: match });
+          setInitialModalOpened(true);
+        }
+      }
+    }
+  }, [plans, initialModalOpened]);
+  // ...existing code...
 
   useEffect(() => {
     fetch(`${API_BASE}/api/plans`)
@@ -186,6 +205,11 @@ export default function AllProgressPage() {
                                         techniques: updatedTechniques,
                                       },
                                     });
+                                    setPlans(prevPlans => prevPlans.map(p =>
+                                      p._id === modal.plan._id
+                                        ? { ...p, techniques: updatedTechniques }
+                                        : p
+                                    ));
                                     setModalLoading(false);
                                   }}
                                 >
@@ -220,6 +244,11 @@ export default function AllProgressPage() {
                                         techniques: updatedTechniques,
                                       },
                                     });
+                                    setPlans(prevPlans => prevPlans.map(p =>
+                                      p._id === modal.plan._id
+                                        ? { ...p, techniques: updatedTechniques }
+                                        : p
+                                    ));
                                     setModalLoading(false);
                                   }}
                                 >
@@ -254,6 +283,11 @@ export default function AllProgressPage() {
                                         techniques: updatedTechniques,
                                       },
                                     });
+                                    setPlans(prevPlans => prevPlans.map(p =>
+                                      p._id === modal.plan._id
+                                        ? { ...p, techniques: updatedTechniques }
+                                        : p
+                                    ));
                                     setModalLoading(false);
                                   }}
                                 >

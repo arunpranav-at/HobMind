@@ -26,13 +26,33 @@ export async function generatePlan(hobby, level){
       body: JSON.stringify({ hobby, level })
     })
     if (!res.ok) {
-      const text = await res.text().catch(()=>null)
-      throw new Error(`API error ${res.status}: ${text || res.statusText}`)
+      let data = null;
+      try {
+        data = await res.json();
+      } catch {
+        data = null;
+      }
+      throw {
+        status: res.status,
+        message: `API error ${res.status}: ${res.statusText}`,
+        data
+      };
     }
-    return res.json()
+    return res.json();
   } catch (err) {
-    console.error('generatePlan error', err)
-    throw err
+    // Only log non-409 errors for debugging; suppress duplicate plan errors
+    if (err && typeof err === 'object' && 'status' in err) {
+      if (err.status !== 409) {
+        console.error('generatePlan error:', {
+          status: err.status,
+          message: err.message,
+          data: err.data
+        });
+      }
+    } else {
+      console.error('generatePlan error', err);
+    }
+    throw err;
   }
 }
 
@@ -43,14 +63,19 @@ export async function savePlan(plan){
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(plan)
     });
     if (!res.ok) {
-      const text = await res.text().catch(()=>null)
-      // If duplicate (409), return a special value instead of throwing
-      if (res.status === 409) {
-        return { duplicate: true, error: text };
+      let data = null;
+      try {
+        data = await res.json();
+      } catch {
+        data = null;
       }
-      throw new Error(`API error ${res.status}: ${text || res.statusText}`)
+      throw {
+        status: res.status,
+        message: `API error ${res.status}: ${res.statusText}`,
+        data
+      };
     }
-    return res.json()
+    return res.json();
   } catch (err) {
     // Only log non-409 errors
     if (!(err.message && err.message.includes('409'))) {

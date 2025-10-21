@@ -25,26 +25,22 @@ export default function Home() {
     // No need to check for existing plan in frontend
     // If not exists, proceed to generate and save
     try {
-      const result = await generatePlan(hobby, level)
+      const result = await generatePlan(hobby, level);
       if (result?.plan) {
-        setPlan(result.plan)
-        const saveResult = await savePlan(result.plan);
-        if (saveResult && saveResult.duplicate) {
-          setShowDuplicateModal(true);
-        } else {
-          router.push('/plan');
-        }
+        setPlan(result.plan);
+        // Redirect to /allprogress with hobby and level as query params
+        router.push(`/allprogress?hobby=${encodeURIComponent(hobby)}&level=${encodeURIComponent(level)}`);
       }
     } catch (err) {
-      // If generatePlan fails with 409, show modal
-      if (err.message && err.message.includes('409')) {
+      // If generatePlan fails with 409, show modal and optionally use plan data
+      if (err.status === 409) {
         setShowDuplicateModal(true);
-        // Do not log duplicate error
+        // Optionally: setPlan(err.data?.plan);
       } else {
         console.warn('Failed to generate plan', err);
       }
     }
-    setLoading(false)
+    setLoading(false);
   }
 
   return (

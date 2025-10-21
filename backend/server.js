@@ -18,38 +18,35 @@ app.get('/', (req, res) => res.send({ status: 'HobMind backend running' }));
 // Generate learning plan (uses Azure OpenAI if configured)
 app.post('/api/generate-plan', async (req, res) => {
   const { hobby = 'Chess', level = 'beginner' } = req.body || {};
-  const plan = await generateLearningPlan({ hobby, level });
-
-  // Normalize techniques to include `uuid` field because Plan model expects uuid
-  const techniques = (plan.techniques || []).map((t, i) => ({
-    uuid: t.uuid || t.id || `t-${Date.now()}-${i}`,
-    title: t.title || t.name || '',
-    description: t.description || t.desc || '',
-    url: t.url || (t.resources && t.resources[0] && t.resources[0].url) || ''
-  }));
-
-  // Attempt to persist the generated plan (dedupe by hobby+level)
   try {
     const exists = await Plan.findOne({ hobby, level });
-    if (!exists) {
-      // Validate techniques shape before creating
-      const valid = Array.isArray(techniques) && techniques.length > 0 && techniques.every(t => t.uuid && t.title);
-      if (valid) {
-        await Plan.create({ hobby, level, techniques });
-        console.log(`Persisted plan for ${hobby} (${level})`);
-      } else {
-        console.warn('Generated plan failed validation; not persisting to DB');
-      }
-    } else {
-      // If exists, we won't overwrite. Logging for visibility.
-      console.log(`Plan for ${hobby} (${level}) already exists in DB`);
+    if (exists) {
+      // Return 409 error if plan exists
+      return res.status(409).json({ error: 'plan already exists', plan: exists });
     }
+    // Generate new plan
+    const plan = await generateLearningPlan({ hobby, level });
+    // Normalize techniques to include `uuid` field because Plan model expects uuid
+    const techniques = (plan.techniques || []).map((t, i) => ({
+      uuid: t.uuid || t.id || `t-${Date.now()}-${i}`,
+      title: t.title || t.name || '',
+      description: t.description || t.desc || '',
+      url: t.url || (t.resources && t.resources[0] && t.resources[0].url) || ''
+    }));
+    // Validate techniques shape before creating
+    const valid = Array.isArray(techniques) && techniques.length > 0 && techniques.every(t => t.uuid && t.title);
+    if (valid) {
+      await Plan.create({ hobby, level, techniques });
+      console.log(`Persisted plan for ${hobby} (${level})`);
+    } else {
+      console.warn('Generated plan failed validation; not persisting to DB');
+    }
+    // Return plan shaped to match frontend expectations (techniques with uuid)
+    res.json({ plan: { hobby, level, techniques } });
   } catch (err) {
     console.warn('Failed to persist generated plan:', err?.message || err);
+    res.status(500).json({ error: err?.message || 'Internal server error' });
   }
-
-  // Return plan shaped to match frontend expectations (techniques with uuid)
-  res.json({ plan: { hobby, level, techniques } });
 });
 
 // List available plans
