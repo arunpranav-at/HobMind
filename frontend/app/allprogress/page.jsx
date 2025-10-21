@@ -1,5 +1,4 @@
 "use client";
-import ProgressPieChart from '../../components/ProgressPieChart';
 import React, { useEffect, useState } from "react";
 import { API_BASE, savePlan } from "../../lib/api";
 

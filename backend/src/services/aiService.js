@@ -1,3 +1,23 @@
+const TAVILY_KEY = process.env.TAVILY_API_KEY;
+
+async function tavilySearch(query) {
+  if (!TAVILY_KEY) return [];
+  try {
+    const res = await axios.post('https://api.tavily.com/search', {
+      api_key: TAVILY_KEY,
+      query,
+      max_results: 5
+    }, { timeout: 8000 });
+    return res.data.results.map(r => ({
+      title: r.title,
+      url: r.url,
+      snippet: r.content || r.snippet || ''
+    }));
+  } catch (err) {
+    console.error('Tavily search failed:', err.response?.status || err.message);
+    return [];
+  }
+}
 // aiService.js
 // Azure OpenAI integration using REST API.
 const axios = require('axios');
@@ -69,7 +89,18 @@ async function generateLearningPlan({ hobby = 'Chess', level = 'beginner' } = {}
 
     if (json && json.techniques && Array.isArray(json.techniques)) {
       // Ensure each technique has an id field
-      json.techniques = json.techniques.map((t, i) => ({ id: t.id || t.uuid || `t-ai-${i}`, title: t.title || t.name || '', description: t.description || t.desc || '', resources: t.resources || [] }));
+      json.techniques = await Promise.all(json.techniques.map(async (t, i) => {
+        const id = t.id || t.uuid || `t-ai-${i}`;
+        const title = t.title || t.name || '';
+        const description = t.description || t.desc || '';
+        // Search for a real resource URL using Tavily
+        let resources = t.resources || [];
+        const tavilyResults = await tavilySearch(`${title} ${description} tutorial`);
+        if (tavilyResults.length > 0) {
+          resources = [{ type: 'web', title: tavilyResults[0].title, url: tavilyResults[0].url }];
+        }
+        return { id, title, description, resources };
+      }));
       return json;
     }
 
