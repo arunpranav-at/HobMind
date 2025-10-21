@@ -18,15 +18,17 @@ export default function PlanListSidebar() {
       .then((data) => setProgress(data.progress || []));
   }, []);
 
+  const router = typeof window !== 'undefined' ? require('next/navigation').useRouter() : null;
   function handleSelectPlan(plan) {
     setSelected(plan.hobby + "-" + plan.level);
     setPlan(plan);
     setHobby(plan.hobby);
     setLevel(plan.level);
+    if (router) router.push('/plan');
   }
 
   return (
-    <aside className="w-64 bg-black/80 text-white h-full p-4 border-r border-gray-800 overflow-y-auto">
+    <aside className="w-72 bg-black/80 text-white h-full p-4 border-r border-gray-800 overflow-y-auto" style={{ minWidth: '288px' }}>
       <h3 className="text-lg font-bold mb-2">Saved Plans</h3>
       <ul className="mb-6">
         {plans.map((plan) => (

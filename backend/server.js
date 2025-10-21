@@ -89,6 +89,17 @@ app.get('/api/plans', async (req, res) => {
   }
 });
 
+// Get a single plan by id
+app.get('/api/plans/:id', async (req, res) => {
+  try {
+    const plan = await Plan.findById(req.params.id).lean();
+    if (!plan) return res.status(404).json({ error: 'Plan not found' });
+    res.json({ plan });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Persist a new plan (created by AI or frontend)
 app.post('/api/plans', async (req, res) => {
   const { hobby, level, techniques } = req.body || {};
