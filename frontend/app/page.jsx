@@ -1,19 +1,30 @@
 "use client"
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useStore } from '../lib/store'
-import { generatePlan } from '../lib/api'
+import { generatePlan, savePlan } from '../lib/api'
 
-export default function Home(){
+
+export default function Home() {
   const { hobby, level, setHobby, setLevel, setPlan } = useStore()
   const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
   async function onGenerate(e){
     e.preventDefault()
     setLoading(true)
     const result = await generatePlan(hobby, level)
-    if (result?.plan) setPlan(result.plan)
+    if (result?.plan) {
+      setPlan(result.plan)
+      try {
+        await savePlan(result.plan);
+      } catch (err) {
+        console.warn('Failed to persist plan to backend', err);
+      }
+      router.push('/plan')
+    }
     setLoading(false)
   }
 

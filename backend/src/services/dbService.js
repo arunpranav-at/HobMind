@@ -5,7 +5,7 @@ async function connect(uri){
     console.warn('MONGO_URI not provided; skipping DB connect');
     return null;
   }
-  return mongoose.connect(uri, { dbName: 'hobmind' });
+  return mongoose.connect(uri, { dbName: 'HobMind' });
 }
 
 module.exports = { connect, mongoose };

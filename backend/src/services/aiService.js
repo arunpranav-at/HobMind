@@ -5,7 +5,8 @@ const axios = require('axios');
 const AZURE_ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT;
 const AZURE_KEY = process.env.AZURE_OPENAI_API_KEY;
 const AZURE_DEPLOYMENT = process.env.AZURE_OPENAI_DEPLOYMENT;
-const API_VERSION = process.env.AZURE_OPENAI_API_VERSION || '2023-05-15';
+// Use a more recent API version by default to match newer Azure OpenAI models
+const API_VERSION = process.env.AZURE_OPENAI_API_VERSION || '2024-12-01-preview';
 
 async function generateLearningPlan({ hobby = 'Chess', level = 'beginner' } = {}){
   // Build a prompt asking the model to return strict JSON with an array of techniques
@@ -38,30 +39,39 @@ async function generateLearningPlan({ hobby = 'Chess', level = 'beginner' } = {}
       n: 1
     };
 
+    // Debug: log the URL being called and a short payload summary (no secrets)
+    console.debug('[aiService] Azure URL:', url);
+    console.debug('[aiService] messages:', payload.messages.map(m => ({ role: m.role, len: m.content.length })));
+
     const res = await axios.post(url, payload, {
       headers: {
         'Content-Type': 'application/json',
         'api-key': AZURE_KEY
       },
-      timeout: 10000
+      timeout: 20000
     });
 
-    const message = res?.data?.choices?.[0]?.message?.content;
+    // Azure chat responses may put the text in choices[0].message.content
+    let message = res?.data?.choices?.[0]?.message?.content || res?.data?.choices?.[0]?.text;
     if (!message) throw new Error('No content from Azure response');
 
-    // Try parsing JSON from the assistant content. It may include markdown or text; attempt to extract JSON substring.
+    // Strip common markdown code fences and surrounding text markers
+    message = message.replace(/```(?:json)?\n?/g, '').replace(/```/g, '').trim();
+
+    // Try parsing JSON from the assistant content. It may include extra commentary; extract JSON-like substring.
     let json = null;
-    try {
-      json = JSON.parse(message);
-    } catch (err) {
-      // Attempt to extract the first JSON object in the string
+    try { json = JSON.parse(message); } catch (err) {
       const match = message.match(/\{[\s\S]*\}/);
       if (match) {
         try { json = JSON.parse(match[0]); } catch (e) { /* swallow */ }
       }
     }
 
-    if (json && json.techniques) return json;
+    if (json && json.techniques && Array.isArray(json.techniques)) {
+      // Ensure each technique has an id field
+      json.techniques = json.techniques.map((t, i) => ({ id: t.id || t.uuid || `t-ai-${i}`, title: t.title || t.name || '', description: t.description || t.desc || '', resources: t.resources || [] }));
+      return json;
+    }
 
     // Fallback: wrap the plain text into a single technique
     return {
@@ -70,7 +80,17 @@ async function generateLearningPlan({ hobby = 'Chess', level = 'beginner' } = {}
       techniques: [ { id: 't-ai-1', title: 'AI suggestion', description: message, resources: [] } ]
     };
   } catch (err) {
-    console.error('Azure OpenAI call failed:', err.message || err);
+    // Better error diagnostics for Azure responses
+    if (err && err.response) {
+      console.error('Azure OpenAI call failed:', err.response.status, err.response.statusText);
+      try {
+        console.error('Azure response body:', JSON.stringify(err.response.data));
+      } catch (e) {
+        console.error('Azure response body (raw):', err.response.data);
+      }
+    } else {
+      console.error('Azure OpenAI call failed:', err.message || err);
+    }
     return {
       hobby,
       level,

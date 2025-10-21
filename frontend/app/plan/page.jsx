@@ -13,7 +13,23 @@ export default function PlanPage(){
 
   useEffect(()=>{
     setLocalPlan(plan)
-    fetchProgress().then(r => { if (r?.progress) { setProgress(r.progress); setProgressMap(r.progress[hobby] || {}) } })
+    fetchProgress().then(r => {
+      if (r?.progress) {
+        // Backend returns an array of progress documents; normalize into map { hobby: { techniqueUuid: status } }
+        const arr = Array.isArray(r.progress) ? r.progress : [];
+        const map = {};
+        arr.forEach(p => {
+          const hb = p.hobby || (p._doc && p._doc.hobby) || '';
+          const t = p.techniqueUuid || p.techniqueId || (p._doc && p._doc.techniqueUuid) || '';
+          const status = p.status || (p._doc && p._doc.status) || '';
+          if (!hb || !t) return;
+          map[hb] = map[hb] || {};
+          map[hb][t] = status;
+        });
+        setProgress(map);
+        setProgressMap(map[hobby] || {});
+      }
+    })
   }, [plan, hobby, setProgress])
 
   async function onStatusChange(techId, status){

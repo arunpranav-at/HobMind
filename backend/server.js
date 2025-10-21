@@ -18,7 +18,37 @@ app.get('/', (req, res) => res.send({ status: 'HobMind backend running' }));
 app.post('/api/generate-plan', async (req, res) => {
   const { hobby = 'Chess', level = 'beginner' } = req.body || {};
   const plan = await generateLearningPlan({ hobby, level });
-  res.json({ plan });
+
+  // Normalize techniques to include `uuid` field because Plan model expects uuid
+  const techniques = (plan.techniques || []).map((t, i) => ({
+    uuid: t.uuid || t.id || `t-${Date.now()}-${i}`,
+    title: t.title || t.name || '',
+    description: t.description || t.desc || '',
+    url: t.url || (t.resources && t.resources[0] && t.resources[0].url) || ''
+  }));
+
+  // Attempt to persist the generated plan (dedupe by hobby+level)
+  try {
+    const exists = await Plan.findOne({ hobby, level });
+    if (!exists) {
+      // Validate techniques shape before creating
+      const valid = Array.isArray(techniques) && techniques.length > 0 && techniques.every(t => t.uuid && t.title);
+      if (valid) {
+        await Plan.create({ hobby, level, techniques });
+        console.log(`Persisted plan for ${hobby} (${level})`);
+      } else {
+        console.warn('Generated plan failed validation; not persisting to DB');
+      }
+    } else {
+      // If exists, we won't overwrite. Logging for visibility.
+      console.log(`Plan for ${hobby} (${level}) already exists in DB`);
+    }
+  } catch (err) {
+    console.warn('Failed to persist generated plan:', err?.message || err);
+  }
+
+  // Return plan shaped to match frontend expectations (techniques with uuid)
+  res.json({ plan: { hobby, level, techniques } });
 });
 
 // Progress endpoints (MongoDB-backed)
@@ -48,8 +78,29 @@ app.post('/api/progress', async (req, res) => {
 // List available plans
 app.get('/api/plans', async (req, res) => {
   try {
-    const plans = await Plan.find({}).limit(50).lean();
+    const { hobby, level } = req.query || {};
+    const filter = {};
+    if (hobby) filter.hobby = hobby;
+    if (level) filter.level = level;
+    const plans = await Plan.find(filter).limit(50).lean();
     res.json({ plans });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Persist a new plan (created by AI or frontend)
+app.post('/api/plans', async (req, res) => {
+  const { hobby, level, techniques } = req.body || {};
+  // Light validation of plan shape
+  if (!hobby || !level || !Array.isArray(techniques)) return res.status(400).json({ error: 'missing fields' });
+  if (!techniques.every(t => (t.uuid || t.id) && (t.title || t.name))) return res.status(400).json({ error: 'techniques must include id/uuid and title' });
+  try {
+    // Basic dedupe: do not create duplicate (hobby+level)
+    const exists = await Plan.findOne({ hobby, level });
+    if (exists) return res.status(409).json({ error: 'plan already exists', plan: exists });
+    const created = await Plan.create({ hobby, level, techniques });
+    res.json({ ok: true, plan: created });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -1,6 +1,7 @@
 import '../styles/globals.css'
 import React from 'react'
 import Link from 'next/link'
+import HydrateStore from '../components/HydrateStore'
 
 export const metadata = {
   title: 'HobMind',
@@ -21,13 +22,20 @@ function Header(){
   )
 }
 
+import PlanListSidebar from '../components/PlanListSidebar';
+
 export default function RootLayout({ children }){
   return (
     <html lang="en">
-      <body className="min-h-screen text-gray-100">
+    "use client";
+    <body className="min-h-screen text-gray-100">
         <div className="stars" aria-hidden="true"></div>
+        <HydrateStore />
         <Header />
-        <main className="max-w-6xl mx-auto px-4 py-8 relative z-10">{children}</main>
+        <div className="flex">
+          <PlanListSidebar />
+          <main className="flex-1 max-w-6xl mx-auto px-4 py-8 relative z-10">{children}</main>
+        </div>
       </body>
     </html>
   )
