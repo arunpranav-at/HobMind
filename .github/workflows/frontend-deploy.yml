@@ -36,6 +36,8 @@ jobs:
         run: npm ci
 
       - name: Build Next.js app
+        env:
+          NEXT_PUBLIC_API_BASE: ${{ secrets.NEXT_PUBLIC_API_BASE }}
         working-directory: ./frontend
         run: npm run build
 
