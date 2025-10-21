@@ -1,9 +1,31 @@
 # HobMind
-HobMind: “Master your passion, one hobby at a time.”🎵 HobMind, light your spark! Learn what you love, leave your mark! Pick your passion, make it shine, Grow your skills — one step at a time!  HobMind — your hobby, redefined! 🔥
 
-## Development
+HobMind — Master your passion, one hobby at a time.
 
-Quick start (Windows PowerShell):
+HobMind helps people learn and make measurable progress on hobbies by breaking learning into plans, techniques, and tracked progress. It's designed as a lightweight full-stack app with a Next.js frontend and a Node/Express backend that stores data in MongoDB and can optionally connect to an AI service for assistance.
+
+Key ideas
+- Create structured practice plans for hobbies.
+- Store and browse techniques and steps to learn skills.
+- Track progress entries over time and visualize improvements.
+- Optionally augment content or generate practice suggestions using an AI service.
+
+Contents of this repo
+- `backend/` — Node.js + Express backend, MongoDB models, API routes and small scripts (seed, etc.).
+- `frontend/` — Next.js 13+ (app router) React frontend, Tailwind CSS, client components and utilities.
+- `README.md` — This file.
+
+Tech stack
+- Frontend: Next.js, React, Tailwind CSS
+- Backend: Node.js, Express
+- Database: MongoDB (via mongoose)
+- Optional: Azure OpenAI (or other AI provider) for AI-assisted features
+
+Quick start (development)
+
+The project expects Node.js and npm installed. Recommended Node version: 18+.
+
+Open two terminals. Windows PowerShell examples:
 
 ```powershell
 # Backend
@@ -17,6 +39,88 @@ npm install --legacy-peer-deps
 npm run dev
 ```
 
-Open the frontend at http://localhost:3000 and the backend at http://localhost:5000 (default).
+After both servers start:
+- Frontend: http://localhost:3000
+- Backend: http://localhost:5000 (default)
 
-See `backend/.env.example` for required environment variables (Azure OpenAI, MongoDB URI).
+Configuration and environment variables
+
+Copy and edit the backend environment example file to provide secrets and connections:
+
+```powershell
+cd .\backend
+copy .env.example .env
+# then edit .env with your values
+notepad .env
+```
+
+Important variables (found in `backend/.env.example`)
+- MONGODB_URI — MongoDB connection string
+- PORT — backend server port (default: 5000)
+- AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_KEY, AZURE_OPENAI_DEPLOYMENT — (optional) for AI features
+
+Seed data
+
+The backend includes a `scripts/seed.js` helper to populate example data. To run it:
+
+```powershell
+cd .\backend
+node scripts/seed.js
+```
+
+Project structure (high level)
+
+- backend/
+	- server.js — main Express server
+	- src/models — Mongoose models (Plan, Progress, Technique)
+	- services — helpers (aiService, dbService)
+	- scripts/seed.js — seed data script
+
+- frontend/
+	- app/ — Next.js app router pages and layout
+	- components/ — React components used across the UI
+	- lib/api.js — frontend API client
+	- utils/ — client-side stores and hooks
+
+Development tips
+- When working on both front and back, run them in separate terminals to get hot reload.
+- Use the browser devtools and the backend logs to debug API issues.
+- For dependency problems in the frontend, `npm install --legacy-peer-deps` is included in the Quick start to work around legacy peer conflicts.
+
+Testing
+
+There are no automated tests provided in the repo by default. Adding unit and integration tests is recommended as a next step. Suggested quick tests:
+- Add a few Jest unit tests for backend model validation and API route handlers.
+- Add a couple of React Testing Library tests for critical frontend components.
+
+Deployment notes
+
+- Backend: can be deployed to any Node-compatible host or containerized via the provided `Dockerfile` in `backend/`.
+- Frontend: designed to work with Vercel or any static + serverless hosting that supports Next.js app router. Environment variables for production should be set in the hosting provider's settings.
+- If using Azure OpenAI, confirm your production keys and region strings are stored securely (Key Vault or provider environment settings).
+
+Contributing
+
+Contributions are welcome. Good things to include with a PR:
+- A short description of the change
+- Any setup or migration steps
+- Tests or manual verification steps
+
+Suggested first issues
+- Add unit tests for backend models
+- Add end-to-end tests for a sample user flow
+- Improve accessibility and responsive UI of `TechniqueCard` and lists
+
+License
+
+This project is released under the license in the repository root (see `LICENSE`).
+
+Contact / support
+
+For questions about running or extending the project, open an issue on the repository or contact the maintainers listed in the project settings.
+
+---
+
+Summary of changes
+
+This README was expanded to include: a clear project description, tech stack, development setup, environment variable guidance, seed instructions, high-level structure, tips for development, testing and deployment notes, and contribution guidance.
