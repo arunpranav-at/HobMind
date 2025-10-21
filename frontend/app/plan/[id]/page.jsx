@@ -2,13 +2,12 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import TechniqueCard from "../../../components/TechniqueCard";
-import { fetchProgress, updateProgress, API_BASE } from "../../../lib/api";
+import { updateProgress, API_BASE } from "../../../lib/api";
 import Confetti from "react-confetti";
 
 export default function PlanDetailPage({ params }) {
   const planId = params?.id;
   const [plan, setPlan] = useState(null);
-  const [progressMap, setProgressMap] = useState({});
   const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
@@ -18,30 +17,17 @@ export default function PlanDetailPage({ params }) {
       .then((data) => setPlan(data.plan));
   }, [planId]);
 
-  useEffect(() => {
-    fetchProgress().then((r) => {
-      if (r?.progress) {
-        const arr = Array.isArray(r.progress) ? r.progress : [];
-        const map = {};
-        arr.forEach((p) => {
-          const hb = p.hobby || (p._doc && p._doc.hobby) || "";
-          const t = p.techniqueUuid || p.techniqueId || (p._doc && p._doc.techniqueUuid) || "";
-          const status = p.status || (p._doc && p._doc.status) || "";
-          if (!hb || !t) return;
-          map[hb] = map[hb] || {};
-          map[hb][t] = status;
-        });
-        setProgressMap(map[plan?.hobby] || {});
-      }
-    });
-  }, [plan]);
+  // No need to fetch progress separately; use plan.techniques status
 
   async function onStatusChange(techId, status) {
     await updateProgress({ hobby: plan?.hobby, techniqueId: techId, status });
-    const updated = { ...progressMap, [techId]: status };
-    setProgressMap(updated);
+    // Update local plan state
+    const updatedTechniques = (plan?.techniques || []).map((t) =>
+      t.uuid === techId ? { ...t, status } : t
+    );
+    setPlan({ ...plan, techniques: updatedTechniques });
     if (
-      Object.values(updated).filter((v) => v === "mastered").length >=
+      updatedTechniques.filter((t) => t.status === "mastered").length >=
       (plan?.techniques?.length || 3)
     ) {
       setShowConfetti(true);
@@ -64,6 +50,7 @@ export default function PlanDetailPage({ params }) {
             <TechniqueCard
               key={t.uuid || t.id}
               technique={t}
+              status={t.status}
               onStatus={(s) => onStatusChange(t.uuid || t.id, s)}
             />
           ))}

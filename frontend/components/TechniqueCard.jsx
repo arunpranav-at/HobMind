@@ -25,9 +25,10 @@ export default function TechniqueCard({ technique = {}, onStatus }){
         <div className="text-sm text-gray-400">{technique.uuid || technique.id}</div>
       </div>
       <div className="mt-4 flex gap-3">
-        <button className={`px-4 py-2 rounded-lg ${status === 'mastered' ? 'ring-2 ring-green-400' : ''}`} style={{background: 'linear-gradient(90deg,#22c55e,#16a34a)', color: 'white'}} onClick={() => handleStatus('mastered')}> Mastered</button>
-        <button className={`px-4 py-2 rounded-lg ${status === 'in-progress' ? 'ring-2 ring-yellow-400' : ''}`} style={{background: 'linear-gradient(90deg,#f59e0b,#f97316)', color: 'white'}} onClick={() => handleStatus('in-progress')}> In Progress</button>
-        <button className={`px-4 py-2 rounded-lg ${status === 'dropped' ? 'ring-2 ring-red-400' : ''}`} style={{background: 'linear-gradient(90deg,#f43f5e,#ef4444)', color: 'white'}} onClick={() => handleStatus('dropped')}> Drop</button>
+          <span className="text-sm font-semibold text-gray-300 mr-2">Current: <span className={`capitalize ${status === 'mastered' ? 'text-green-400' : status === 'in-progress' ? 'text-yellow-400' : status === 'dropped' ? 'text-red-400' : 'text-gray-400'}`}>{status.replace('-', ' ')}</span></span>
+          <button className={`px-4 py-2 rounded-lg ${status === 'mastered' ? 'ring-2 ring-green-400' : ''}`} style={{background: 'linear-gradient(90deg,#22c55e,#16a34a)', color: 'white'}} onClick={() => handleStatus('mastered')}>🎓 Mastered</button>
+          <button className={`px-4 py-2 rounded-lg ${status === 'in-progress' ? 'ring-2 ring-yellow-400' : ''}`} style={{background: 'linear-gradient(90deg,#f59e0b,#f97316)', color: 'white'}} onClick={() => handleStatus('in-progress')}>🚧 In Progress</button>
+          <button className={`px-4 py-2 rounded-lg ${status === 'dropped' ? 'ring-2 ring-red-400' : ''}`} style={{background: 'linear-gradient(90deg,#f43f5e,#ef4444)', color: 'white'}} onClick={() => handleStatus('dropped')}>🗑 Drop</button>
       </div>
     </motion.div>
   )

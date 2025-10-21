@@ -3,7 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const { connect } = require('./src/services/dbService');
 const { generateLearningPlan } = require('./src/services/aiService');
-const Progress = require('./src/models/Progress');
+// Deprecated: Progress model is no longer used for new progress changes
+// const Progress = require('./src/models/Progress');
 const Plan = require('./src/models/Plan');
 
 const app = express();
@@ -65,11 +66,15 @@ app.post('/api/progress', async (req, res) => {
   const { hobby, techniqueId, status } = req.body || {};
   if (!hobby || !techniqueId || !status) return res.status(400).json({ error: 'missing fields' });
   try {
-    // techniqueId maps to techniqueUuid in the Progress model
-    const filter = { hobby, techniqueUuid: techniqueId };
-    const update = { hobby, techniqueUuid: techniqueId, status, updatedAt: new Date() };
-    const doc = await Progress.findOneAndUpdate(filter, update, { upsert: true, new: true, setDefaultsOnInsert: true });
-    res.json({ ok: true, progress: doc });
+    // Find the plan for the hobby
+    const plan = await Plan.findOne({ hobby });
+    if (!plan) return res.status(404).json({ error: 'Plan not found for hobby' });
+    // Find the technique and update its status
+    const tech = plan.techniques.find(t => t.uuid === techniqueId);
+    if (!tech) return res.status(404).json({ error: 'Technique not found in plan' });
+    tech.status = status;
+    await plan.save();
+    res.json({ ok: true, technique: tech });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

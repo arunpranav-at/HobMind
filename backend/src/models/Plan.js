@@ -4,7 +4,8 @@ const TechniqueSchema = new mongoose.Schema({
   uuid: { type: String, required: true },
   title: { type: String, required: true },
   description: String,
-  url: String
+  url: String,
+  status: { type: String, enum: ['in-progress','mastered','dropped','not-started','pending'], default: 'not-started' }
 }, { _id: false });
 
 const PlanSchema = new mongoose.Schema({

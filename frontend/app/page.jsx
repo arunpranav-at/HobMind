@@ -86,7 +86,6 @@ export default function Home() {
               </select>
               <div className="flex gap-4 justify-center">
                 <button className="neon-btn transition-all duration-300 ease-in-out hover:scale-[1.05] hover:shadow-lg" disabled={loading}>{loading ? 'Generating...' : 'Generate Plan'}</button>
-                <Link href="/plan" className="px-6 py-3 border rounded-xl text-white/90 transition-all duration-300 ease-in-out hover:scale-[1.05] hover:shadow-lg">Open plan</Link>
               </div>
             </form>
           </section>
