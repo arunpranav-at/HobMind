@@ -2,11 +2,11 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import TechniqueCard from "../../../components/TechniqueCard";
-import { updateProgress, API_BASE } from "../../../lib/api";
+import { API_BASE } from "../../../lib/api";
 import Confetti from "react-confetti";
 
 export default function PlanDetailPage({ params }) {
-  const planId = params?.id;
+  const { id: planId } = React.use(params);
   const [plan, setPlan] = useState(null);
   const [showConfetti, setShowConfetti] = useState(false);
 
@@ -20,8 +20,7 @@ export default function PlanDetailPage({ params }) {
   // No need to fetch progress separately; use plan.techniques status
 
   async function onStatusChange(techId, status) {
-    await updateProgress({ hobby: plan?.hobby, techniqueId: techId, status });
-    // Update local plan state
+    // Only update local plan state, no API call
     const updatedTechniques = (plan?.techniques || []).map((t) =>
       t.uuid === techId ? { ...t, status } : t
     );

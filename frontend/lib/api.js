@@ -18,32 +18,6 @@ export async function generatePlan(hobby, level){
   }
 }
 
-export async function fetchProgress(){
-  try {
-    const res = await fetch(`${API_BASE}/api/progress`)
-    if (!res.ok) throw new Error(`API error ${res.status}`)
-    return res.json()
-  } catch (err) {
-    console.error('fetchProgress error', err)
-    return { error: err.message }
-  }
-}
-
-export async function updateProgress(payload){
-  try {
-    const res = await fetch(`${API_BASE}/api/progress`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
-    })
-    if (!res.ok) {
-      const text = await res.text().catch(()=>null)
-      throw new Error(`API error ${res.status}: ${text || res.statusText}`)
-    }
-    return res.json()
-  } catch (err) {
-    console.error('updateProgress error', err)
-    return { error: err.message }
-  }
-}
 
 export async function savePlan(plan){
   try {
@@ -52,11 +26,18 @@ export async function savePlan(plan){
     });
     if (!res.ok) {
       const text = await res.text().catch(()=>null)
+      // If duplicate (409), return a special value instead of throwing
+      if (res.status === 409) {
+        return { duplicate: true, error: text };
+      }
       throw new Error(`API error ${res.status}: ${text || res.statusText}`)
     }
     return res.json()
   } catch (err) {
-    console.error('savePlan error', err)
+    // Only log non-409 errors
+    if (!(err.message && err.message.includes('409'))) {
+      console.error('savePlan error', err)
+    }
     throw err
   }
 }

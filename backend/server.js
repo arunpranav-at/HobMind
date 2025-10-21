@@ -52,34 +52,6 @@ app.post('/api/generate-plan', async (req, res) => {
   res.json({ plan: { hobby, level, techniques } });
 });
 
-// Progress endpoints (MongoDB-backed)
-app.get('/api/progress', async (req, res) => {
-  try {
-    const items = await Progress.find({});
-    res.json({ progress: items });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.post('/api/progress', async (req, res) => {
-  const { hobby, techniqueId, status } = req.body || {};
-  if (!hobby || !techniqueId || !status) return res.status(400).json({ error: 'missing fields' });
-  try {
-    // Find the plan for the hobby
-    const plan = await Plan.findOne({ hobby });
-    if (!plan) return res.status(404).json({ error: 'Plan not found for hobby' });
-    // Find the technique and update its status
-    const tech = plan.techniques.find(t => t.uuid === techniqueId);
-    if (!tech) return res.status(404).json({ error: 'Technique not found in plan' });
-    tech.status = status;
-    await plan.save();
-    res.json({ ok: true, technique: tech });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
 // List available plans
 app.get('/api/plans', async (req, res) => {
   try {

@@ -2,10 +2,12 @@
 import React, { useEffect, useState } from 'react'
 import TechniqueCard from '../../components/TechniqueCard'
 import { useStore } from '../../lib/store'
-import { fetchProgress, updateProgress } from '../../lib/api'
+// import { fetchProgress, updateProgress } from '../../lib/api'
 import Confetti from 'react-confetti'
 
 export default function PlanPage(){
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
   const { hobby, plan, setPlan, setProgress } = useStore()
   const [localPlan, setLocalPlan] = useState(plan)
   const [progressMap, setProgressMap] = useState({})
@@ -13,27 +15,18 @@ export default function PlanPage(){
 
   useEffect(()=>{
     setLocalPlan(plan)
-    fetchProgress().then(r => {
-      if (r?.progress) {
-        // Backend returns an array of progress documents; normalize into map { hobby: { techniqueUuid: status } }
-        const arr = Array.isArray(r.progress) ? r.progress : [];
-        const map = {};
-        arr.forEach(p => {
-          const hb = p.hobby || (p._doc && p._doc.hobby) || '';
-          const t = p.techniqueUuid || p.techniqueId || (p._doc && p._doc.techniqueUuid) || '';
-          const status = p.status || (p._doc && p._doc.status) || '';
-          if (!hb || !t) return;
-          map[hb] = map[hb] || {};
-          map[hb][t] = status;
-        });
-        setProgress(map);
-        setProgressMap(map[hobby] || {});
-      }
-    })
+    // Progress is now tracked in plan.techniques, no need to fetch separately
+    if (plan && plan.techniques) {
+      const map = {};
+      plan.techniques.forEach(t => {
+        map[t.uuid || t.id] = t.status || 'not-started';
+      });
+      setProgressMap(map);
+    }
   }, [plan, hobby, setProgress])
 
   async function onStatusChange(techId, status){
-    await updateProgress({ hobby, techniqueId: techId, status })
+    // Update local plan technique status only
     const updated = { ...progressMap, [techId]: status }
     setProgressMap(updated)
     if (Object.values(updated).filter(v => v === 'mastered').length >= (localPlan?.techniques?.length || 3)){
@@ -42,7 +35,8 @@ export default function PlanPage(){
     }
   }
 
-  if (!localPlan) return <div className="text-center text-gray-500">No plan yet — generate one on the home page.</div>
+  if (!mounted) return null;
+  if (!localPlan) return <div className="text-center text-gray-500">No plan yet — generate one on the home page.</div>;
 
   return (
     <div className="relative z-20">

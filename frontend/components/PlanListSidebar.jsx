@@ -6,16 +6,14 @@ import { API_BASE } from "../lib/api";
 export default function PlanListSidebar() {
   const { setPlan, setHobby, setLevel } = useStore();
   const [plans, setPlans] = useState([]);
-  const [progress, setProgress] = useState([]);
+    // const [progress, setProgress] = useState([]);
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
     fetch(`${API_BASE}/api/plans`)
       .then((r) => r.json())
       .then((data) => setPlans(data.plans || []));
-    fetch(`${API_BASE}/api/progress`)
-      .then((r) => r.json())
-      .then((data) => setProgress(data.progress || []));
+    // Progress endpoint removed; progress is now tracked in plans
   }, []);
 
   const router = typeof window !== 'undefined' ? require('next/navigation').useRouter() : null;
@@ -28,7 +26,7 @@ export default function PlanListSidebar() {
   }
 
   return (
-    <aside className="w-72 bg-black/80 text-white h-full p-4 border-r border-gray-800 overflow-y-auto" style={{ minWidth: '288px' }}>
+    <aside className="w-72 bg-black/80 text-white h-full p-4 border-r border-gray-800 overflow-y-auto rounded-xl" style={{ minWidth: '288px' }}>
       <h3 className="text-lg font-bold mb-2">Saved Plans</h3>
       <ul className="mb-6">
         {plans.map((plan) => (
@@ -42,16 +40,7 @@ export default function PlanListSidebar() {
           </li>
         ))}
       </ul>
-      <h3 className="text-lg font-bold mb-2">Progress</h3>
-      <ul>
-        {progress.map((p, idx) => (
-          <li key={p._id || idx} className="mb-2 p-2 rounded-lg bg-gray-900">
-            <div className="font-semibold">{p.hobby}</div>
-            <div className="text-xs text-gray-300">Technique: {p.techniqueUuid}</div>
-            <div className="text-xs text-green-400">Status: {p.status}</div>
-          </li>
-        ))}
-      </ul>
+        {/* Progress section removed */}
     </aside>
   );
 }

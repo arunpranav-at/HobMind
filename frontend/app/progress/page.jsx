@@ -1,12 +1,13 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { fetchProgress } from '../../lib/api'
+// import { fetchProgress } from '../../lib/api'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 
 export default function ProgressPage(){
   const [progress, setProgress] = useState([])
 
-  useEffect(()=>{ fetchProgress().then(r => setProgress(r.progress || {})) }, [])
+  // Progress endpoint removed; progress is now tracked in plans
+  useEffect(()=>{ setProgress([]) }, [])
 
   // Group progress by hobby and level
   const arr = Array.isArray(progress) ? progress : Object.values(progress).flat();
