@@ -48,7 +48,7 @@ export default function PlanDetailPage({ params }) {
           {(plan.techniques || []).map((t) => (
             <TechniqueCard
               key={t.uuid || t.id}
-              technique={t}
+              technique={{...t, showStatusButtons: false}}
               status={t.status}
               onStatus={(s) => onStatusChange(t.uuid || t.id, s)}
             />

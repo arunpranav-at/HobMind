@@ -1,3 +1,21 @@
+// Update an existing plan's techniques/status
+export async function updatePlan(planId, techniques) {
+  try {
+    const res = await fetch(`${API_BASE}/api/plans/${planId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ techniques })
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(()=>null);
+      throw new Error(`API error ${res.status}: ${text || res.statusText}`);
+    }
+    return res.json();
+  } catch (err) {
+    console.error('updatePlan error', err);
+    throw err;
+  }
+}
 export const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:5000'
 
 export async function generatePlan(hobby, level){

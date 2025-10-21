@@ -94,6 +94,21 @@ app.post('/api/plans', async (req, res) => {
   }
 });
 
+// Update techniques/status for an existing plan
+app.put('/api/plans/:id', async (req, res) => {
+  const { techniques } = req.body || {};
+  if (!Array.isArray(techniques)) return res.status(400).json({ error: 'techniques array required' });
+  try {
+    const plan = await Plan.findById(req.params.id);
+    if (!plan) return res.status(404).json({ error: 'Plan not found' });
+    plan.techniques = techniques;
+    await plan.save();
+    res.json({ ok: true, plan });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Resources endpoint (static/pre-seeded)
 app.get('/api/resources', (req, res) => {
   // Return a small set of example resources; later this can call YouTube API

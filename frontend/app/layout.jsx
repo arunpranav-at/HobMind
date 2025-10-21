@@ -10,7 +10,7 @@ export const metadata = {
 
 function Header(){
   return (
-    <header className="space-hero sticky top-0 z-30">
+  <header className="space-hero sticky top-0 z-40">
       <div className="w-full px-0 py-6 flex items-center justify-center glass">
         <Link href="/" className="font-extrabold text-3xl tracking-tight text-white">HobMind</Link>
       </div>

@@ -98,15 +98,15 @@ export default function Home() {
 
   {/* Right Sidebar: Progress */}
   <aside className="col-span-3 space-y-4 flex flex-col">
-          <motion.section initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} className="glass p-6 rounded-2xl shadow-xl shadow-purple-500/10 h-[420px] flex flex-col overflow-auto transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg">
+          <div className="glass p-6 rounded-2xl shadow-xl shadow-purple-500/10 h-[420px] flex flex-col overflow-auto transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg">
             <h3 className="text-2xl font-semibold text-center mb-2">Progress</h3>
             <div className="space-y-3">
-              <div className="text-gray-500">Use this to view all status of your learning progress along with visualization and nicely categorized techniques.</div>
+              <div className="text-gray-500">Use this to view all learning resources along with visualization and nicely categorized techniques.</div>
             </div>
             <div className="mt-4 flex justify-center">
               <Link href="/allprogress" className="px-4 py-2 neon-btn">View All Progress</Link>
             </div>
-          </motion.section>
+          </div>
         </aside>
       </div>
     </div>
