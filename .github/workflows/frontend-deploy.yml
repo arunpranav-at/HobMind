@@ -1,31 +1,39 @@
 name: Deploy Frontend to Azure App Service
 
 on:
+  # Trigger on push to main branch in frontend folder
   push:
     branches: [ main ]
     paths:
       - 'frontend/**'
 
+  # Allow manual run from GitHub UI
+  workflow_dispatch:
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    env:
-      AZURE_WEBAPP_NAME_FRONTEND: ${{ secrets.AZURE_WEBAPP_NAME_FRONTEND }}
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Set up Node
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '18.x'
 
-      - name: Install & Build
-        run: |
-          cd frontend
-          npm ci
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build Next.js app
+        working-directory: ./frontend
+        run: npm run build
+
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME_FRONTEND }}
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME_FRONTEND }}
           publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE_FRONTEND }}
           package: ./frontend
