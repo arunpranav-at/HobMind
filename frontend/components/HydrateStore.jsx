@@ -1,10 +1,10 @@
 "use client"
 import React, { useEffect } from 'react'
 import { useStore } from '../lib/store'
-import { API_BASE } from '../lib/api'
+import { API_BASE, getAura } from '../lib/api'
 
 export default function HydrateStore(){
-  const { hobby, level, setPlan } = useStore();
+  const { hobby, level, setPlan, setAuraPoints } = useStore();
 
   useEffect(()=>{
     // Try to fetch authoritative plan from backend; prefer server state over localStorage
@@ -26,6 +26,21 @@ export default function HydrateStore(){
     }
     fetchPlan();
   }, [hobby, level, setPlan]);
+
+  // Fetch aura points once on initial client mount so UI shows correct value immediately
+  useEffect(()=>{
+    async function fetchAura(){
+      try {
+        const body = await getAura();
+        if (body && typeof body.points !== 'undefined' && body.points !== null){
+          setAuraPoints(body.points);
+        }
+      } catch (err){
+        console.debug('HydrateStore fetchAura failed', err);
+      }
+    }
+    fetchAura();
+  }, [setAuraPoints]);
 
   return null;
 }
