@@ -19,7 +19,7 @@ export default function AllPlansPage() {
   );
   return (
     <div className="max-w-5xl mx-auto py-8 px-4 sm:py-12 sm:px-6">
-      <h2 className="text-3xl sm:text-5xl font-extrabold mb-6 sm:mb-10 text-white text-center drop-shadow-lg animate-fade-in">All Plans</h2>
+  <h2 className="text-3xl sm:text-5xl font-extrabold mb-6 sm:mb-10 text-white text-center drop-shadow-lg animate-hm-fade-in">All Plans</h2>
       <div className="flex justify-center mb-6">
         <input
           type="text"
@@ -34,43 +34,26 @@ export default function AllPlansPage() {
           {filteredPlans.map((plan, idx) => (
             <li
               key={plan._id || plan.hobby + plan.level}
-              className="bg-gradient-to-br from-black/90 via-indigo-900/80 to-black/80 p-8 rounded-2xl flex flex-col gap-3 shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-3xl animate-fade-in"
+              className="bg-gradient-to-br from-black/90 via-indigo-900/80 to-black/80 p-8 rounded-2xl flex flex-col gap-3 shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-3xl animate-hm-fade-in"
               style={{ animationDelay: `${idx * 100}ms` }}
             >
               <div className="font-extrabold text-3xl text-white mb-2 tracking-wide flex items-center gap-2">
-                <span className="inline-block animate-pop">{plan.hobby}</span>
+                <span className="inline-block animate-hm-pop">{plan.hobby}</span>
               </div>
               <div className="text-lg text-gray-300 mb-4">Level: <span className="text-white font-semibold">{plan.level}</span></div>
               <Link
                 href={`/plan/${plan._id}`}
-                className="self-start px-6 py-2 rounded-full bg-blue-600 text-white font-bold text-lg shadow-md transition-all duration-300 hover:bg-blue-400 hover:text-black focus:outline-none focus:ring-2 focus:ring-blue-400 animate-pop"
+                className="self-start px-6 py-2 rounded-full bg-blue-600 text-white font-bold text-lg shadow-md transition-all duration-300 hover:bg-blue-400 hover:text-black focus:outline-none focus:ring-2 focus:ring-blue-400 animate-hm-pop"
               >
                 View Plan
               </Link>
             </li>
           ))}
           {filteredPlans.length === 0 && (
-            <li className="text-gray-500 text-xl text-center animate-fade-in">No plans found.</li>
+            <li className="text-gray-500 text-xl text-center animate-hm-fade-in">No plans found.</li>
           )}
         </ul>
       </div>
-      <style jsx>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.7s cubic-bezier(.4,0,.2,1) both;
-        }
-        @keyframes pop {
-          0% { transform: scale(0.95); }
-          60% { transform: scale(1.05); }
-          100% { transform: scale(1); }
-        }
-        .animate-pop {
-          animation: pop 0.5s cubic-bezier(.4,0,.2,1) both;
-        }
-      `}</style>
     </div>
   );
 }

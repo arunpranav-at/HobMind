@@ -1,6 +1,4 @@
 import '../styles/globals.css'
-import React from 'react'
-import Link from 'next/link'
 import HydrateStore from '../components/HydrateStore'
 import Header from '../components/Header'
 

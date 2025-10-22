@@ -56,7 +56,7 @@ export default function AllProgressPage() {
   return (
     <div>
       <div className="max-w-5xl mx-auto py-8 px-4 sm:py-12 sm:px-6">
-        <h2 className="text-3xl sm:text-5xl font-extrabold mb-6 sm:mb-10 text-white text-center drop-shadow-lg animate-fade-in">
+        <h2 className="text-3xl sm:text-5xl font-extrabold mb-6 sm:mb-10 text-white text-center drop-shadow-lg animate-hm-fade-in">
           All Progress
         </h2>
 
@@ -75,12 +75,12 @@ export default function AllProgressPage() {
             {filteredPlans.map((plan, idx) => (
               <div
                 key={plan._id || plan.hobby + plan.level}
-                className="bg-gradient-to-br from-black/90 via-indigo-900/80 to-black/80 p-8 rounded-2xl flex flex-col gap-3 shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-3xl animate-fade-in cursor-pointer"
+                className="bg-gradient-to-br from-black/90 via-indigo-900/80 to-black/80 p-8 rounded-2xl flex flex-col gap-3 shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-3xl animate-hm-fade-in cursor-pointer"
                 style={{ animationDelay: `${idx * 100}ms` }}
                 onClick={() => setModal({ open: true, plan })}
               >
                 <div className="font-extrabold text-3xl text-white mb-2 tracking-wide flex items-center gap-2">
-                  <span className="inline-block animate-pop">{plan.hobby}</span>
+                  <span className="inline-block animate-hm-pop">{plan.hobby}</span>
                 </div>
                 <div className="text-lg text-gray-300 mb-4">
                   Level:{" "}
@@ -97,7 +97,7 @@ export default function AllProgressPage() {
           </div>
 
           {filteredPlans.length === 0 && (
-            <div className="text-gray-500 text-xl text-center animate-fade-in">
+            <div className="text-gray-500 text-xl text-center animate-hm-fade-in">
               No progress found.
             </div>
           )}

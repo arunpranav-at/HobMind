@@ -3,8 +3,6 @@ const express = require('express');
 const cors = require('cors');
 const { connect } = require('./src/services/dbService');
 const { generateLearningPlan } = require('./src/services/aiService');
-// Deprecated: Progress model is no longer used for new progress changes
-// const Progress = require('./src/models/Progress');
 const Plan = require('./src/models/Plan');
 const Aura = require('./src/models/Aura');
 

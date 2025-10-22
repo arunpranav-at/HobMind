@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
 import { useStore } from '../lib/store'
 import { generatePlan, savePlan } from '../lib/api'
 
@@ -10,8 +9,6 @@ import { generatePlan, savePlan } from '../lib/api'
 export default function Home() {
   const { hobby, level, setHobby, setLevel, setPlan } = useStore()
   const [loading, setLoading] = useState(false)
-  // const [plans, setPlans] = useState([])
-  // const [progress, setProgress] = useState([])
   const router = useRouter()
 
   // Modal state for duplicate plan

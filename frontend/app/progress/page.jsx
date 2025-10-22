@@ -1,6 +1,5 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-// import { fetchProgress } from '../../lib/api'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 
 export default function ProgressPage(){

@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react'
 import TechniqueCard from '../../components/TechniqueCard'
 import { useStore } from '../../lib/store'
-// import { fetchProgress, updateProgress } from '../../lib/api'
 import Confetti from 'react-confetti'
 
 export default function PlanPage(){
