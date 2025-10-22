@@ -1,28 +1,29 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { API_BASE, savePlan, adjustAura, getAura } from "../../lib/api";
-import { useStore } from '../../lib/store'
-import AuraToast from '../../components/AuraToast'
+import { useStore } from "../../lib/store";
+import AuraToast from "../../components/AuraToast";
 
 export default function AllProgressPage() {
-  // ...existing code...
   const [plans, setPlans] = useState([]);
   const [search, setSearch] = useState("");
   const [popup, setPopup] = useState({ open: false, url: "", title: "" });
   const [modal, setModal] = useState({ open: false, plan: null });
   const [modalLoading, setModalLoading] = useState(false);
-  const [toast, setToast] = useState({ open: false, message: '' });
-  const setAuraPoints = useStore(s => s.setAuraPoints)
+  const [toast, setToast] = useState({ open: false, message: "" });
   const [initialModalOpened, setInitialModalOpened] = useState(false);
+  const setAuraPoints = useStore((s) => s.setAuraPoints);
 
   // Read query params for hobby and level
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      const hobbyParam = params.get('hobby');
-      const levelParam = params.get('level');
+      const hobbyParam = params.get("hobby");
+      const levelParam = params.get("level");
       if (plans.length > 0 && hobbyParam && levelParam && !initialModalOpened) {
-        const match = plans.find(p => p.hobby === hobbyParam && p.level === levelParam);
+        const match = plans.find(
+          (p) => p.hobby === hobbyParam && p.level === levelParam
+        );
         if (match) {
           setModal({ open: true, plan: match });
           setInitialModalOpened(true);
@@ -30,22 +31,22 @@ export default function AllProgressPage() {
       }
     }
   }, [plans, initialModalOpened]);
-  // ...existing code...
 
   useEffect(() => {
     fetch(`${API_BASE}/api/plans`)
       .then((r) => r.json())
       .then((data) => setPlans(data.plans || []));
+
     // Fetch initial aura points
-    (async ()=>{
+    (async () => {
       try {
         const a = await getAura();
-        if (a && typeof a.points === 'number') setAuraPoints(a.points);
-      } catch(e){}
+        if (a && typeof a.points === "number") setAuraPoints(a.points);
+      } catch (e) {}
     })();
   }, []);
 
-  // Group by hobby and level, filter by search
+  // Filtered plans
   const filteredPlans = plans.filter(
     (plan) =>
       plan.hobby.toLowerCase().includes(search.toLowerCase()) ||
@@ -87,7 +88,9 @@ export default function AllProgressPage() {
                 </div>
                 <div className="text-xs text-gray-400">
                   {plan.techniques?.length || 0} techniques
-                  <p className="text-sm text-gray-300 italic">Click to view details</p>
+                  <p className="text-sm text-gray-300 italic">
+                    Click to view details
+                  </p>
                 </div>
               </div>
             ))}
@@ -100,35 +103,44 @@ export default function AllProgressPage() {
           )}
         </div>
 
-        {/* Modal for plan details and technique status */}
+        {/* Modal */}
         {modal.open && (
-           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-             <div
-               className="bg-gray-900 rounded-2xl p-6 shadow-2xl max-w-2xl w-full text-left border border-indigo-500 overflow-y-auto z-50"
-               style={{ maxHeight: '80vh', marginTop: '40px' }}
-             >
-               <div className="flex justify-between items-center mb-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+            <div
+              className="bg-gray-900 rounded-2xl p-6 shadow-2xl max-w-2xl w-full text-left border border-indigo-500 overflow-y-auto z-50"
+              style={{ maxHeight: "80vh", marginTop: "40px" }}
+            >
+              <div className="flex justify-between items-center mb-4">
                 <div>
-                   <h2 className="text-3xl font-extrabold mb-1 text-white">
-                     {modal.plan.hobby}
-                   </h2>
-                   {/* Progress Bar */}
-                   {(() => {
-                     const total = modal.plan.techniques?.length || 0;
-                     const mastered = modal.plan.techniques?.filter(t => t.status === 'mastered').length || 0;
-                     const percent = total ? Math.round((mastered / total) * 100) : 0;
-                     return (
-                       <div className="w-full my-2">
-                         <div className="h-4 bg-gray-800 rounded-full overflow-hidden">
-                           <div
-                             className="h-4 bg-green-500 rounded-full transition-all duration-500"
-                             style={{ width: `${percent}%` }}
-                           ></div>
-                         </div>
-                         <div className="text-xs text-gray-300 mt-1 text-right">{percent}% mastered</div>
-                       </div>
-                     );
-                   })()}
+                  <h2 className="text-3xl font-extrabold mb-1 text-white">
+                    {modal.plan.hobby}
+                  </h2>
+
+                  {/* Progress Bar */}
+                  {(() => {
+                    const total = modal.plan.techniques?.length || 0;
+                    const mastered =
+                      modal.plan.techniques?.filter(
+                        (t) => t.status === "mastered"
+                      ).length || 0;
+                    const percent = total
+                      ? Math.round((mastered / total) * 100)
+                      : 0;
+                    return (
+                      <div className="w-full my-2">
+                        <div className="h-4 bg-gray-800 rounded-full overflow-hidden">
+                          <div
+                            className="h-4 bg-green-500 rounded-full transition-all duration-500"
+                            style={{ width: `${percent}%` }}
+                          ></div>
+                        </div>
+                        <div className="text-xs text-gray-300 mt-1 text-right">
+                          {percent}% mastered
+                        </div>
+                      </div>
+                    );
+                  })()}
+
                   <div className="text-lg text-gray-300 mb-2">
                     Level:{" "}
                     <span className="text-white font-semibold">
@@ -144,24 +156,21 @@ export default function AllProgressPage() {
                 </button>
               </div>
 
-              {/* Group techniques by status */}
-               {["mastered", "in-progress", "dropped", "not-started"].map(
-                 (status) => (
+              {/* Grouped Techniques */}
+              {["mastered", "in-progress", "dropped", "not-started"].map(
+                (status) => (
                   <div key={status} className="mb-6">
                     <div className="flex items-center gap-2 mb-2">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-md
-                          ${
-                            status === "mastered"
-                              ? "bg-green-600 text-white"
-                              : status === "dropped"
-                              ? "bg-red-600 text-white"
-                              : status === "in-progress"
-                              ? "bg-yellow-500 text-black"
-                              : status === "pending"
-                              ? "bg-gray-500 text-white"
-                              : "bg-gray-700 text-white"
-                          }`}
+                        className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-md ${
+                          status === "mastered"
+                            ? "bg-green-600 text-white"
+                            : status === "dropped"
+                            ? "bg-red-600 text-white"
+                            : status === "in-progress"
+                            ? "bg-yellow-500 text-black"
+                            : "bg-gray-700 text-white"
+                        }`}
                       >
                         {status.replace("-", " ")}
                       </span>
@@ -172,7 +181,9 @@ export default function AllProgressPage() {
                         (t) => (t.status || "not-started") === status
                       ).length > 0 ? (
                         modal.plan.techniques
-                          .filter((t) => (t.status || "not-started") === status)
+                          .filter(
+                            (t) => (t.status || "not-started") === status
+                          )
                           .map((tech) => (
                             <li
                               key={tech.uuid || tech.id}
@@ -186,10 +197,11 @@ export default function AllProgressPage() {
                               </span>
 
                               <div className="flex gap-2 mt-2 flex-wrap">
+                                {/* Mastered */}
                                 <button
                                   className={`px-4 py-2 rounded-lg ${
                                     tech.status === "mastered"
-                                      ? "ring-2 ring-green-400"
+                                      ? "ring-2 ring-green-400 opacity-60 cursor-not-allowed"
                                       : ""
                                   }`}
                                   style={{
@@ -197,8 +209,12 @@ export default function AllProgressPage() {
                                       "linear-gradient(90deg,#22c55e,#16a34a)",
                                     color: "white",
                                   }}
-                                  disabled={modalLoading}
+                                  disabled={
+                                    modalLoading ||
+                                    tech.status === "mastered"
+                                  }
                                   onClick={async () => {
+                                    if (tech.status === "mastered") return;
                                     setModalLoading(true);
                                     const updatedTechniques =
                                       modal.plan.techniques.map((t) =>
@@ -206,12 +222,23 @@ export default function AllProgressPage() {
                                           ? { ...t, status: "mastered" }
                                           : t
                                       );
-                                    // Persist status update
-                                    await import('../../lib/api').then(({ updatePlan }) => updatePlan(modal.plan._id, updatedTechniques));
-                                    // Adjust aura +15 for mastered
+                                    await import("../../lib/api").then(
+                                      ({ updatePlan }) =>
+                                        updatePlan(
+                                          modal.plan._id,
+                                          updatedTechniques
+                                        )
+                                    );
                                     const auraResp = await adjustAura(15);
-                                    if (auraResp && typeof auraResp.points === 'number') setAuraPoints(auraResp.points);
-                                    setToast({ open: true, message: `Hurray, +15 Aura points` });
+                                    if (
+                                      auraResp &&
+                                      typeof auraResp.points === "number"
+                                    )
+                                      setAuraPoints(auraResp.points);
+                                    setToast({
+                                      open: true,
+                                      message: `Hurray, +15 Aura points`,
+                                    });
                                     setModal({
                                       open: true,
                                       plan: {
@@ -219,21 +246,27 @@ export default function AllProgressPage() {
                                         techniques: updatedTechniques,
                                       },
                                     });
-                                    setPlans(prevPlans => prevPlans.map(p =>
-                                      p._id === modal.plan._id
-                                        ? { ...p, techniques: updatedTechniques }
-                                        : p
-                                    ));
+                                    setPlans((prev) =>
+                                      prev.map((p) =>
+                                        p._id === modal.plan._id
+                                          ? {
+                                              ...p,
+                                              techniques: updatedTechniques,
+                                            }
+                                          : p
+                                      )
+                                    );
                                     setModalLoading(false);
                                   }}
                                 >
                                   🎓 Mastered
                                 </button>
 
+                                {/* In Progress */}
                                 <button
                                   className={`px-4 py-2 rounded-lg ${
                                     tech.status === "in-progress"
-                                      ? "ring-2 ring-yellow-400"
+                                      ? "ring-2 ring-yellow-400 opacity-60 cursor-not-allowed"
                                       : ""
                                   }`}
                                   style={{
@@ -241,8 +274,12 @@ export default function AllProgressPage() {
                                       "linear-gradient(90deg,#f59e0b,#f97316)",
                                     color: "white",
                                   }}
-                                  disabled={modalLoading}
+                                  disabled={
+                                    modalLoading ||
+                                    tech.status === "in-progress"
+                                  }
                                   onClick={async () => {
+                                    if (tech.status === "in-progress") return;
                                     setModalLoading(true);
                                     const updatedTechniques =
                                       modal.plan.techniques.map((t) =>
@@ -250,11 +287,23 @@ export default function AllProgressPage() {
                                           ? { ...t, status: "in-progress" }
                                           : t
                                       );
-                                    await import('../../lib/api').then(({ updatePlan }) => updatePlan(modal.plan._id, updatedTechniques));
-                                    // Adjust aura +10 for in-progress
+                                    await import("../../lib/api").then(
+                                      ({ updatePlan }) =>
+                                        updatePlan(
+                                          modal.plan._id,
+                                          updatedTechniques
+                                        )
+                                    );
                                     const auraResp2 = await adjustAura(10);
-                                    if (auraResp2 && typeof auraResp2.points === 'number') setAuraPoints(auraResp2.points);
-                                    setToast({ open: true, message: `Hurray, +10 Aura points` });
+                                    if (
+                                      auraResp2 &&
+                                      typeof auraResp2.points === "number"
+                                    )
+                                      setAuraPoints(auraResp2.points);
+                                    setToast({
+                                      open: true,
+                                      message: `Hurray, +10 Aura points`,
+                                    });
                                     setModal({
                                       open: true,
                                       plan: {
@@ -262,21 +311,27 @@ export default function AllProgressPage() {
                                         techniques: updatedTechniques,
                                       },
                                     });
-                                    setPlans(prevPlans => prevPlans.map(p =>
-                                      p._id === modal.plan._id
-                                        ? { ...p, techniques: updatedTechniques }
-                                        : p
-                                    ));
+                                    setPlans((prev) =>
+                                      prev.map((p) =>
+                                        p._id === modal.plan._id
+                                          ? {
+                                              ...p,
+                                              techniques: updatedTechniques,
+                                            }
+                                          : p
+                                      )
+                                    );
                                     setModalLoading(false);
                                   }}
                                 >
                                   🚧 In Progress
                                 </button>
 
+                                {/* Dropped */}
                                 <button
                                   className={`px-4 py-2 rounded-lg ${
                                     tech.status === "dropped"
-                                      ? "ring-2 ring-red-400"
+                                      ? "ring-2 ring-red-400 opacity-60 cursor-not-allowed"
                                       : ""
                                   }`}
                                   style={{
@@ -284,8 +339,11 @@ export default function AllProgressPage() {
                                       "linear-gradient(90deg,#f43f5e,#ef4444)",
                                     color: "white",
                                   }}
-                                  disabled={modalLoading}
+                                  disabled={
+                                    modalLoading || tech.status === "dropped"
+                                  }
                                   onClick={async () => {
+                                    if (tech.status === "dropped") return;
                                     setModalLoading(true);
                                     const updatedTechniques =
                                       modal.plan.techniques.map((t) =>
@@ -293,11 +351,23 @@ export default function AllProgressPage() {
                                           ? { ...t, status: "dropped" }
                                           : t
                                       );
-                                    await import('../../lib/api').then(({ updatePlan }) => updatePlan(modal.plan._id, updatedTechniques));
-                                    // Adjust aura -2 for drop
+                                    await import("../../lib/api").then(
+                                      ({ updatePlan }) =>
+                                        updatePlan(
+                                          modal.plan._id,
+                                          updatedTechniques
+                                        )
+                                    );
                                     const auraResp3 = await adjustAura(-2);
-                                    if (auraResp3 && typeof auraResp3.points === 'number') setAuraPoints(auraResp3.points);
-                                    setToast({ open: true, message: `Oops, -2 Aura points` });
+                                    if (
+                                      auraResp3 &&
+                                      typeof auraResp3.points === "number"
+                                    )
+                                      setAuraPoints(auraResp3.points);
+                                    setToast({
+                                      open: true,
+                                      message: `Oops, -2 Aura points`,
+                                    });
                                     setModal({
                                       open: true,
                                       plan: {
@@ -305,17 +375,23 @@ export default function AllProgressPage() {
                                         techniques: updatedTechniques,
                                       },
                                     });
-                                    setPlans(prevPlans => prevPlans.map(p =>
-                                      p._id === modal.plan._id
-                                        ? { ...p, techniques: updatedTechniques }
-                                        : p
-                                    ));
+                                    setPlans((prev) =>
+                                      prev.map((p) =>
+                                        p._id === modal.plan._id
+                                          ? {
+                                              ...p,
+                                              techniques: updatedTechniques,
+                                            }
+                                          : p
+                                      )
+                                    );
                                     setModalLoading(false);
                                   }}
                                 >
                                   🗑 Drop
                                 </button>
 
+                                {/* Details */}
                                 <button
                                   className="px-4 py-1 rounded-full bg-indigo-600 text-white font-semibold text-sm shadow-md hover:bg-indigo-400 hover:text-black transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                                   onClick={() =>
@@ -337,8 +413,14 @@ export default function AllProgressPage() {
                         </li>
                       )}
 
-                        {/* Aura toast */}
-                        <AuraToast message={toast.message} open={toast.open} onClose={() => setToast({ open: false, message: '' })} />
+                      {/* Aura Toast */}
+                      <AuraToast
+                        message={toast.message}
+                        open={toast.open}
+                        onClose={() =>
+                          setToast({ open: false, message: "" })
+                        }
+                      />
                     </ul>
                   </div>
                 )
@@ -347,7 +429,7 @@ export default function AllProgressPage() {
           </div>
         )}
 
-        {/* Details popup for resource URL */}
+        {/* Details popup */}
         {popup.open && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70">
             <div className="bg-gray-900 rounded-2xl p-8 shadow-2xl max-w-md w-full text-center border border-indigo-500">
@@ -369,9 +451,7 @@ export default function AllProgressPage() {
                     </a>
                     <button
                       className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 text-white"
-                      onClick={() =>
-                        setPopup({ open: false, url: "", title: "" })
-                      }
+                      onClick={() => setPopup({ open: false, url: "", title: "" })}
                     >
                       Close
                     </button>
