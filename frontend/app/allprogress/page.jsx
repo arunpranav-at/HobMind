@@ -1,6 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { API_BASE, savePlan } from "../../lib/api";
+import { API_BASE, savePlan, adjustAura, getAura } from "../../lib/api";
+import { useStore } from '../../lib/store'
+import AuraToast from '../../components/AuraToast'
 
 export default function AllProgressPage() {
   // ...existing code...
@@ -9,6 +11,8 @@ export default function AllProgressPage() {
   const [popup, setPopup] = useState({ open: false, url: "", title: "" });
   const [modal, setModal] = useState({ open: false, plan: null });
   const [modalLoading, setModalLoading] = useState(false);
+  const [toast, setToast] = useState({ open: false, message: '' });
+  const setAuraPoints = useStore(s => s.setAuraPoints)
   const [initialModalOpened, setInitialModalOpened] = useState(false);
 
   // Read query params for hobby and level
@@ -32,6 +36,13 @@ export default function AllProgressPage() {
     fetch(`${API_BASE}/api/plans`)
       .then((r) => r.json())
       .then((data) => setPlans(data.plans || []));
+    // Fetch initial aura points
+    (async ()=>{
+      try {
+        const a = await getAura();
+        if (a && typeof a.points === 'number') setAuraPoints(a.points);
+      } catch(e){}
+    })();
   }, []);
 
   // Group by hobby and level, filter by search
@@ -197,6 +208,10 @@ export default function AllProgressPage() {
                                       );
                                     // Persist status update
                                     await import('../../lib/api').then(({ updatePlan }) => updatePlan(modal.plan._id, updatedTechniques));
+                                    // Adjust aura +15 for mastered
+                                    const auraResp = await adjustAura(15);
+                                    if (auraResp && typeof auraResp.points === 'number') setAuraPoints(auraResp.points);
+                                    setToast({ open: true, message: `Hurray, +15 Aura points` });
                                     setModal({
                                       open: true,
                                       plan: {
@@ -236,6 +251,10 @@ export default function AllProgressPage() {
                                           : t
                                       );
                                     await import('../../lib/api').then(({ updatePlan }) => updatePlan(modal.plan._id, updatedTechniques));
+                                    // Adjust aura +10 for in-progress
+                                    const auraResp2 = await adjustAura(10);
+                                    if (auraResp2 && typeof auraResp2.points === 'number') setAuraPoints(auraResp2.points);
+                                    setToast({ open: true, message: `Hurray, +10 Aura points` });
                                     setModal({
                                       open: true,
                                       plan: {
@@ -275,6 +294,10 @@ export default function AllProgressPage() {
                                           : t
                                       );
                                     await import('../../lib/api').then(({ updatePlan }) => updatePlan(modal.plan._id, updatedTechniques));
+                                    // Adjust aura -2 for drop
+                                    const auraResp3 = await adjustAura(-2);
+                                    if (auraResp3 && typeof auraResp3.points === 'number') setAuraPoints(auraResp3.points);
+                                    setToast({ open: true, message: `Oops, -2 Aura points` });
                                     setModal({
                                       open: true,
                                       plan: {
@@ -313,6 +336,9 @@ export default function AllProgressPage() {
                           No techniques
                         </li>
                       )}
+
+                        {/* Aura toast */}
+                        <AuraToast message={toast.message} open={toast.open} onClose={() => setToast({ open: false, message: '' })} />
                     </ul>
                   </div>
                 )

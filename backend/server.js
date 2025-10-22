@@ -6,6 +6,7 @@ const { generateLearningPlan } = require('./src/services/aiService');
 // Deprecated: Progress model is no longer used for new progress changes
 // const Progress = require('./src/models/Progress');
 const Plan = require('./src/models/Plan');
+const Aura = require('./src/models/Aura');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -38,6 +39,13 @@ app.post('/api/generate-plan', async (req, res) => {
     if (valid) {
       await Plan.create({ hobby, level, techniques });
       console.log(`Persisted plan for ${hobby} (${level})`);
+      try {
+        // Increase aura points by 5 for each plan generation
+        const auraDoc = await Aura.findOneAndUpdate({ key: 'global' }, { $inc: { points: 5 } }, { upsert: true, new: true });
+        console.log('Aura increased by +5 to', auraDoc.points);
+      } catch (e) {
+        console.warn('Failed to update aura points', e?.message || e);
+      }
     } else {
       console.warn('Generated plan failed validation; not persisting to DB');
     }
@@ -46,6 +54,28 @@ app.post('/api/generate-plan', async (req, res) => {
   } catch (err) {
     console.warn('Failed to persist generated plan:', err?.message || err);
     res.status(500).json({ error: err?.message || 'Internal server error' });
+  }
+});
+
+// Get current aura points
+app.get('/api/aura', async (req, res) => {
+  try {
+    const doc = await Aura.findOne({ key: 'global' }).lean();
+    res.json({ points: (doc && typeof doc.points === 'number') ? doc.points : 0 });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Adjust aura points (delta)
+app.post('/api/aura/adjust', async (req, res) => {
+  try {
+    const { delta } = req.body || {};
+    if (typeof delta !== 'number') return res.status(400).json({ error: 'delta (number) required' });
+    const doc = await Aura.findOneAndUpdate({ key: 'global' }, { $inc: { points: delta } }, { upsert: true, new: true });
+    res.json({ points: doc.points });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

@@ -18,6 +18,27 @@ export async function updatePlan(planId, techniques) {
 }
 export const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:5000'
 
+export async function getAura(){
+  try {
+    const res = await fetch(`${API_BASE}/api/aura`);
+    if (!res.ok) {
+      let body = null;
+      try { body = await res.text(); } catch(e){}
+      console.error('getAura non-ok response', { status: res.status, statusText: res.statusText, body });
+      throw new Error(`Failed to fetch aura: ${res.status} ${res.statusText}`);
+    }
+    return res.json();
+  } catch (err) { console.error('getAura', err); return { points: 0 } }
+}
+
+export async function adjustAura(delta){
+  try {
+    const res = await fetch(`${API_BASE}/api/aura/adjust`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ delta }) });
+    if (!res.ok) throw new Error('Failed to adjust aura');
+    return res.json();
+  } catch (err) { console.error('adjustAura', err); return { points: null } }
+}
+
 export async function generatePlan(hobby, level){
   try {
     const res = await fetch(`${API_BASE}/api/generate-plan`, {

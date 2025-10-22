@@ -19,7 +19,7 @@ Tech stack
 - Frontend: Next.js, React, Tailwind CSS
 - Backend: Node.js, Express
 - Database: MongoDB (via mongoose)
-- Optional: Azure OpenAI (or other AI provider) for AI-assisted features
+- Optional: Azure OpenAI for AI-assisted features + Tavily for Web Search
 
 Quick start (development)
 
@@ -54,11 +54,6 @@ copy .env.example .env
 notepad .env
 ```
 
-Important variables (found in `backend/.env.example`)
-- MONGODB_URI — MongoDB connection string
-- PORT — backend server port (default: 5000)
-- AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_KEY, AZURE_OPENAI_DEPLOYMENT — (optional) for AI features
-
 Seed data
 
 The backend includes a `scripts/seed.js` helper to populate example data. To run it:
@@ -87,12 +82,6 @@ Development tips
 - Use the browser devtools and the backend logs to debug API issues.
 - For dependency problems in the frontend, `npm install --legacy-peer-deps` is included in the Quick start to work around legacy peer conflicts.
 
-Testing
-
-There are no automated tests provided in the repo by default. Adding unit and integration tests is recommended as a next step. Suggested quick tests:
-- Add a few Jest unit tests for backend model validation and API route handlers.
-- Add a couple of React Testing Library tests for critical frontend components.
-
 Deployment notes
 
 - Backend: can be deployed to any Node-compatible host or containerized via the provided `Dockerfile` in `backend/`.
@@ -106,21 +95,10 @@ Contributions are welcome. Good things to include with a PR:
 - Any setup or migration steps
 - Tests or manual verification steps
 
-Suggested first issues
-- Add unit tests for backend models
-- Add end-to-end tests for a sample user flow
-- Improve accessibility and responsive UI of `TechniqueCard` and lists
-
 License
 
-This project is released under the license in the repository root (see `LICENSE`).
+This project is released under the MIT license (see [LICENSE](./LICENSE)).
 
 Contact / support
 
 For questions about running or extending the project, open an issue on the repository or contact the maintainers listed in the project settings.
-
----
-
-Summary of changes
-
-This README was expanded to include: a clear project description, tech stack, development setup, environment variable guidance, seed instructions, high-level structure, tips for development, testing and deployment notes, and contribution guidance.
