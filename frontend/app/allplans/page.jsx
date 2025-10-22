@@ -18,19 +18,19 @@ export default function AllPlansPage() {
       plan.level.toLowerCase().includes(search.toLowerCase())
   );
   return (
-    <div className="max-w-5xl mx-auto py-12 px-4">
-      <h2 className="text-5xl font-extrabold mb-10 text-white text-center drop-shadow-lg animate-fade-in">All Plans</h2>
-      <div className="flex justify-center mb-8">
+    <div className="max-w-5xl mx-auto py-8 px-4 sm:py-12 sm:px-6">
+      <h2 className="text-3xl sm:text-5xl font-extrabold mb-6 sm:mb-10 text-white text-center drop-shadow-lg animate-fade-in">All Plans</h2>
+      <div className="flex justify-center mb-6">
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search by hobby or level..."
-          className="w-full max-w-md px-5 py-3 rounded-full bg-black/60 border border-indigo-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-lg transition-all duration-200"
+          className="w-full max-w-md px-4 py-2 sm:px-5 sm:py-3 rounded-full bg-black/60 border border-indigo-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow transition-all duration-200"
         />
       </div>
-      <div className="glass p-10 rounded-3xl shadow-2xl">
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="glass p-6 sm:p-10 rounded-3xl shadow-2xl">
+        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
           {filteredPlans.map((plan, idx) => (
             <li
               key={plan._id || plan.hobby + plan.level}

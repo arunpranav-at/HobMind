@@ -55,23 +55,23 @@ export default function AllProgressPage() {
 
   return (
     <div>
-      <div className="max-w-5xl mx-auto py-12 px-4">
-        <h2 className="text-5xl font-extrabold mb-10 text-white text-center drop-shadow-lg animate-fade-in">
+      <div className="max-w-5xl mx-auto py-8 px-4 sm:py-12 sm:px-6">
+        <h2 className="text-3xl sm:text-5xl font-extrabold mb-6 sm:mb-10 text-white text-center drop-shadow-lg animate-fade-in">
           All Progress
         </h2>
 
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-6">
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by hobby or level..."
-            className="w-full max-w-md px-5 py-3 rounded-full bg-black/60 border border-indigo-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-lg transition-all duration-200"
+            className="w-full max-w-md px-4 py-2 sm:px-5 sm:py-3 rounded-full bg-black/60 border border-indigo-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow transition-all duration-200"
           />
         </div>
 
-        <div className="glass p-10 rounded-3xl shadow-2xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="glass p-6 sm:p-10 rounded-3xl shadow-2xl">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
             {filteredPlans.map((plan, idx) => (
               <div
                 key={plan._id || plan.hobby + plan.level}
@@ -107,10 +107,10 @@ export default function AllProgressPage() {
         {modal.open && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
             <div
-              className="bg-gray-900 rounded-2xl p-6 shadow-2xl max-w-2xl w-full text-left border border-indigo-500 overflow-y-auto z-50"
-              style={{ maxHeight: "80vh", marginTop: "40px" }}
+              className="bg-gray-900 rounded-2xl p-4 sm:p-6 shadow-2xl max-w-2xl w-full text-left border border-indigo-500 overflow-y-auto z-50 mx-4 sm:mx-0"
+              style={{ maxHeight: "80vh", marginTop: "24px" }}
             >
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
                 <div>
                   <h2 className="text-3xl font-extrabold mb-1 text-white">
                     {modal.plan.hobby}
@@ -149,7 +149,7 @@ export default function AllProgressPage() {
                   </div>
                 </div>
                 <button
-                  className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 text-white"
+                  className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 text-white self-end"
                   onClick={() => setModal({ open: false, plan: null })}
                 >
                   Close

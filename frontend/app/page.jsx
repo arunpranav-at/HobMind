@@ -59,13 +59,13 @@ export default function Home() {
           </div>
         </div>
       )}
-  <div className="grid grid-cols-12 gap-8 max-w-7xl mx-auto p-8 py-8 rounded-3xl bg-black/70 backdrop-blur-md shadow-2xl border border-purple-900">
+  <div className="grid grid-cols-1 md:grid-cols-12 gap-6 max-w-7xl mx-auto p-4 md:p-8 rounded-3xl bg-black/70 backdrop-blur-md shadow-2xl border border-purple-900">
   {/* Left Sidebar: Saved Plans */}
-  <aside className="col-span-3 space-y-4 flex flex-col">
+  <aside className="md:col-span-3 space-y-4 flex flex-col order-2 md:order-1">
           <div className="glass p-6 rounded-2xl shadow-xl shadow-purple-500/10 h-[420px] overflow-auto border-r border-gray-800 transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg">
               <h3 className="text-2xl font-semibold text-center mb-2">Saved Plans</h3>
               <div className="space-y-3">
-                <div className="text-gray-500">Use this to view all generated plans and also to mark them as complete, in-progress, or dropped.</div>
+                <div className="text-gray-500">Use this to view all generated plans and see their statuses - mastered, in-progress, dropped or not-started.</div>
               </div>
             <div className="mt-4 flex justify-center">
               <Link href="/allplans" className="px-4 py-2 neon-btn">View All Plans</Link>
@@ -74,8 +74,8 @@ export default function Home() {
         </aside>
 
         {/* Center: Hero Section */}
-        <main className="col-span-6 flex flex-col items-center justify-center space-y-6 text-center">
-          <section className="glass p-8 rounded-3xl shadow-xl shadow-purple-500/10 w-full max-w-lg mx-auto flex flex-col items-center justify-center h-[420px] overflow-auto transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg">
+        <main className="md:col-span-6 flex flex-col items-center justify-center space-y-6 text-center order-1 md:order-2">
+          <section className="glass p-6 md:p-8 rounded-3xl shadow-xl shadow-purple-500/10 w-full max-w-lg mx-auto flex flex-col items-center justify-center min-h-[320px] md:min-h-[420px] overflow-auto transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg">
             <h1 className="text-4xl font-bold text-white text-center mb-2">Make learning a hobby cosmic</h1>
             <p className="text-gray-400 text-center max-w-md mx-auto mb-4 text-base">Type a hobby below and we'll generate 5–8 high-impact techniques tailored to your level. Fast growth, tiny daily wins.</p>
             <form className="space-y-4 w-full" onSubmit={onGenerate}>
@@ -93,11 +93,11 @@ export default function Home() {
         </main>
 
   {/* Right Sidebar: Progress */}
-  <aside className="col-span-3 space-y-4 flex flex-col">
+  <aside className="md:col-span-3 space-y-4 flex flex-col order-3">
           <div className="glass p-6 rounded-2xl shadow-xl shadow-purple-500/10 h-[420px] flex flex-col overflow-auto transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg">
             <h3 className="text-2xl font-semibold text-center mb-2">Progress</h3>
             <div className="space-y-3">
-              <div className="text-gray-500">Use this to view all learning resources along with visualization and nicely categorized techniques.</div>
+              <div className="text-gray-500">Use this to view all learning resources along with your progress and categorized techniques.</div>
             </div>
             <div className="mt-4 flex justify-center">
               <Link href="/allprogress" className="px-4 py-2 neon-btn">View All Progress</Link>
