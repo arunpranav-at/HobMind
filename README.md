@@ -1,3 +1,5 @@
+NOTE: THIS IS A DEMO APP, NO SIGNUP/SIGNIN IMPLEMENTED.
+
 # HobMind
 
 HobMind — Master your passion, one hobby at a time.
